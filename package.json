@@ -1,0 +1,23 @@
+{
+  "name": "cache",
+  "version": "0.0.1",
+  "description": "Cache class for UA",
+  "main": "cache.coffee",
+  "dependencies": {
+    "bling": "latest",
+    "q": "latest"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "coffee test.coffee"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.ua.com/jdailey/cache.git"
+  },
+  "keywords": [
+    "cache"
+  ],
+  "author": "Jesse Dailey <jesse.dailey@gmail.com>",
+  "license": "MIT"
+}
