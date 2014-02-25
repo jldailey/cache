@@ -12,6 +12,9 @@ test: all
 	(${NODEUNIT} dist/test.js && \
 		${NODEUNIT} --reporter junit dist/test.js --output dist)
 
+clean:
+	rm -f dist/*
+
 dist/%.js: %.coffee
 	${COFFEE} -o dist -c $<
 
