@@ -2,14 +2,15 @@
   "name": "cache",
   "version": "0.0.1",
   "description": "Cache class for UA",
-  "main": "cache.coffee",
+  "main": "dist/cache.js",
   "dependencies": {
     "bling": "latest",
-    "q": "latest"
+    "q": "latest",
+    "nodeunit": "^0.8.6"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "coffee test.coffee"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
