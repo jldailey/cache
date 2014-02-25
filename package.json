@@ -5,8 +5,7 @@
   "main": "dist/cache.js",
   "dependencies": {
     "bling": "latest",
-    "q": "latest",
-    "nodeunit": "^0.8.6"
+    "nodeunit": "latest"
   },
   "devDependencies": {},
   "scripts": {
@@ -20,5 +19,4 @@
     "cache"
   ],
   "author": "Jesse Dailey <jesse.dailey@gmail.com>",
-  "license": "MIT"
 }
