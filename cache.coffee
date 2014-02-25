@@ -1,5 +1,4 @@
 $ = require 'bling'
-q = require 'q'
 
 # Implement an efficient cache that supports:
 # - fixed-sizing
@@ -7,17 +6,19 @@ q = require 'q'
 # - pubsub invalidation
 
 EVICT_AUTO = -1
-EVICT_PCT = .1
 
 module.exports = class Cache
 	constructor: (
 		@capacity=Infinity,
 		@defaultTTL=Infinity,
 		@evictCount=EVICT_AUTO,
+		@evictPct=.25, # only applies if EVICT_AUTO
 	) ->
+
 		# cache items are stored under their cache key
 		# the stored items are like { r: <# of get> w: <# of set>, k: key, v: item }
 		index = Object.create null
+
 		# for tracking each key in order of efficiency
 		# (so we can quickly evict the least efficient)
 		order = []
@@ -27,16 +28,14 @@ module.exports = class Cache
 		eff = (key) ->
 			return Infinity unless key of index
 			item = index[key]
-			e = item.r / item.w
-			return e
+			return -item.r / item.w
 
 		autoEvict = => # make room in the cache if needed
-			if order.length > @capacity
+			if order.length >= @capacity
 				evictCount = switch @evictCount
-					when EVICT_AUTO then @capacity * EVICT_PCT
+					when EVICT_AUTO then @capacity * @evictPct
 					else @evictCount
 				for key in order.splice order.length - evictCount, evictCount
-					console.log 'evicting', key
 					delete index[key]
 			null
 
@@ -52,12 +51,10 @@ module.exports = class Cache
 			# find it's proper position
 			j = $.sortedIndex order, item.k, eff
 			if j isnt i
-				console.log "swapping item", i, "to", j
 				order.splice i, 1 # remove from current position
 				order.splice j, 0, item.k # insert into new position
 				reIndex i, j
-			console.log order.map (x) -> [x, eff x]
-			item
+			return item
 
 		$.defineProperty @, 'length',
 			get: -> order.length
@@ -68,15 +65,21 @@ module.exports = class Cache
 			reIndex index[key].i, order.length - 1
 			delete index[key]
 
-		@get = (key) =>
-			return unless key of index
-			item = index[key]
-			item.r += 1
-			reOrder item
-			return item.v
+		@get = (keys...) =>
+			ret = $(keys).map (key) -> return switch true
+				when key of index
+					item = index[key]
+					item.r += 1
+					reOrder item
+					item.v
+				else undefined
+
+			switch ret.length
+				when 1 then ret[0]
+				else ret
 
 		@set = (key, value, ttl=@defaultTTL) =>
-			console.log 'setting key', key, eff(key)
+			autoEvict()
 			if key of index
 				item = index[key]
 				item.w += 1
@@ -84,7 +87,7 @@ module.exports = class Cache
 				index[key] = item = {
 					r: 0.0, # number of gets
 					w: 1.0, # number of sets (counting this one)
-					i: 0, # efficiency rank
+					i: order.length, # efficiency rank
 					k: key,
 					v: value
 				}
@@ -94,5 +97,4 @@ module.exports = class Cache
 			# cache-hits and misses can change efficiency
 			# so we always re-order
 			reOrder item
-			autoEvict()
 			return item.v
