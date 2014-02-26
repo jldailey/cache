@@ -4,12 +4,21 @@
   "description": "Cache class for UA",
   "main": "dist/cache.js",
   "dependencies": {
-    "bling": "latest",
-    "nodeunit": "latest"
+    "bling": "~0.3.4"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "gulp": "~3.5.2",
+    "gulp-coffeelint": "~0.3.0",
+    "gulp-coffee": "~1.4.1",
+    "gulp-jshint": "~1.5.0",
+    "gulp-grunt": "~0.4.1",
+    "grunt-contrib-nodeunit": "~0.3.2",
+    "rimraf": "~2.2.6",
+    "coffee-script": "~1.7.1"
+  },
   "scripts": {
-    "test": "make test"
+    "test": "gulp test",
+    "prepublish": "gulp dist"
   },
   "repository": {
     "type": "git",

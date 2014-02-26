@@ -59,13 +59,13 @@ module.exports = class Cache
 		$.defineProperty @, 'length',
 			get: -> order.length
 
-		@remove = (key) =>
+		@remove = (key) ->
 			return unless key of index
 			order.splice index[key].i, 1
 			reIndex index[key].i, order.length - 1
 			delete index[key]
 
-		@get = (keys...) =>
+		@get = (keys...) ->
 			ret = $(keys).map (key) -> return switch true
 				when key of index
 					item = index[key]
