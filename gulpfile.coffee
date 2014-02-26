@@ -41,7 +41,12 @@ gulp.task "build", ->
 
 gulp.task "test", ->
 	gulp.src testFiles
-		.pipe nodeunit()
+		.pipe nodeunit({
+			reporter: process.env.NODEUNIT_REPORTER ? 'default',
+			reporterOptions: {
+				output: "dist"
+			}
+		})
 
 gulp.task "develop", [
 	"lint"
