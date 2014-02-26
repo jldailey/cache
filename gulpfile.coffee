@@ -2,17 +2,22 @@ gulp       = require("gulp")
 coffee     = require("gulp-coffee")
 coffeelint = require("gulp-coffeelint")
 jshint     = require("gulp-jshint")
+nodeunit   = require("gulp-nodeunit")
 rimraf     = require("rimraf")
 
 dist = "dist"
 scriptFiles = [
 	"**/*.coffee"
 	"!gulpfile.coffee"
-	"!node_modules/**"
 	"!**/*.test.coffee"
+	"!node_modules/**"
 ]
 testFiles = [
 	"**/*.test.coffee"
+	"!node_modules/**"
+]
+allFiles = [
+	"**/*.coffee"
 	"!node_modules/**"
 ]
 
@@ -34,11 +39,15 @@ gulp.task "build", ->
 		.pipe coffee()
 		.pipe gulp.dest dist
 
-# TODO: Add a gulp nodeunit runner and remove the grunt dependency
-require("gulp-grunt") gulp
-gulp.task "test", ["grunt-nodeunit"]
-gulp.task "develop", ->
-	gulp.watch scriptFiles.concat testFiles, [
+gulp.task "test", ->
+	gulp.src testFiles
+		.pipe nodeunit()
+
+gulp.task "develop", [
+	"lint"
+	"test"
+], ->
+	gulp.watch allFiles, [
 		"lint"
 		"test"
 	]
