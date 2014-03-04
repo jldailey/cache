@@ -1,4 +1,5 @@
 $ = require 'bling'
+Url = require 'url'
 
 # Implement an efficient cache that supports:
 # - fixed-sizing
@@ -98,3 +99,26 @@ module.exports = class Cache
 			# so we always re-order
 			reOrder item
 			return item.v
+	
+		protocols = Object.create null
+		@register_protocol = (proto, impl) ->
+			protocols[proto] = impl
+
+		@connect = (url) =>
+			url = Url.parse url
+			impl = protocols[url.proto]
+			impl.subscribe "cache-activity", (err, message) ->
+				return console.error err if err
+				try
+					obj = JSON.parse message
+					assert 'op' of obj, "Message must contain an 'op'."
+					assert 'key' of obj, "Message must contain a 'key'."
+				catch err
+					return console.error err
+				switch obj.op
+					when 'remove' then @remove obj.key
+					when 'get' then impl.publish "cache-values", [ obj.key, @get(obj.key) ]
+					when 'set' then @set obj.key, obj.value
+
+
+require "./drivers"
