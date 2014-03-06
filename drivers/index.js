@@ -1,1 +1,2 @@
-require "./rabbitmq"
+require("./stub")
+require("./rabbitmq")
