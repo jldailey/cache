@@ -70,11 +70,11 @@ exports.testPubSubInvalidateWithRabbitMq = (test) ->
 		context = require('rabbit.js').createContext(amqp_url)
 		pub = context.socket('PUB')
 		pub.connect 'cache-activity', ->
-			pub.write JSON.stringify({ op: "remove", key: "b" }), 'utf8'
+			pub.end JSON.stringify({ op: "remove", key: "b" }), 'utf8'
 			$.delay 100, ->
 				test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
 				log "calling cache.disconnect"
 				cache.disconnect(amqp_url)
-				pub.close()
+				context.close()
 				test.done()
 

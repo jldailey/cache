@@ -10,6 +10,7 @@ ready = $.Promise()
 sockets = Object.create null
 
 Cache.register_protocol "amqp:", {
+
 	connect: (url) ->
 		context = Rabbit.createContext(url)
 		context.on 'ready', ->
@@ -23,7 +24,7 @@ Cache.register_protocol "amqp:", {
 		ready.then (context) -> # for now we ignore the channel
 			pub = context.socket('PUB')
 			pub.connect channel, ->
-				pub.write JSON.stringify(message), 'utf8'
+				pub.end JSON.stringify(message), 'utf8'
 				p.finish()
 		p
 
@@ -34,12 +35,16 @@ Cache.register_protocol "amqp:", {
 			sub.connect channel, ->
 				sub.on 'data', handler
 				sub.on 'error', (err) ->
-					console.error err
+					console.error "Error in sub to ", channel, err
+				if channel of sockets
+					sockets[channel].close()
 				sockets[channel] = sub
 				p.finish()
-			p
+		p
 
 	unsubscribe: (channel, handler) -> # handler gets (err, data)
+		if channel of sockets
+			sockets[channel].close()
 		$.Promise().finish()
 	
 	disconnect: ->
