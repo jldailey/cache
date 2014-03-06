@@ -116,12 +116,9 @@ module.exports = class Cache
 			impl = protocols[parsed.protocol]
 			impl.connect(url).then (connection) =>
 				connections[url] = impl
-				log "connected, subscribing to cache-activity"
 				impl.subscribe "cache-activity", (message) =>
-					log "I see cache-activity:", message
 					try
 						obj = JSON.parse String(message)
-						log "parsed:", JSON.stringify(obj)
 						assert 'op' of obj, "Message must contain an 'op'."
 						assert 'key' of obj, "Message must contain a 'key'."
 					catch err
