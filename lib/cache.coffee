@@ -107,7 +107,6 @@ module.exports = class Cache
 			reOrder item
 			return item.v
 	
-
 		connections = []
 		@connect = (url) =>
 			p = $.Promise()
@@ -135,7 +134,7 @@ module.exports = class Cache
 				p.finish()
 			p
 
-		@disconnect = (url) =>
+		@disconnect = (url) ->
 			connections[url]?.disconnect()
 
 
