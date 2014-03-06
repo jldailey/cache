@@ -1,35 +1,51 @@
-amqp = require('amqp')
 $ = require 'bling'
+Rabbit = require('rabbit.js')
+Cache = require "../cache"
+Q = require 'q'
+
+log = $.logger "[rabbitmq]"
 
 ready = $.Promise()
 
-consumerTags = Object.create null
+sockets = Object.create null
 
-Cache.register_protocol "amqp", {
+Cache.register_protocol "amqp:", {
 	connect: (url) ->
-		connection = amqp.createConnection { url: url }
-		connection.on 'ready', ->
-			ready.finish connection
-		connection.on 'error', (err) ->
+		context = Rabbit.createContext(url)
+		context.on 'ready', =>
+			ready.finish context
+		context.on 'error', (err) ->
 			ready.fail err
+		ready
+
 	publish: (channel, message) ->
-		ready.wait (err, connection) ->
-			return if err
-			connection.queue channel, (q) ->
-				q.publish message
+		p = $.Promise()
+		ready.then (context) -> # for now we ignore the channel
+			pub = context.socket('PUB')
+			pub.connect channel, ->
+				pub.write JSON.stringify(message), 'utf8'
+				p.finish()
+		p
+
 	subscribe: (channel, handler) ->
-		ready.wait (err, connection) ->
-			return if err
-			connection.queue channel, (q) ->
-				q.bind '#'
-				q.subscribe((msg) -> handler null, msg)
-					# take note of the consumer tag of the subscription
-					.addCallback( (ok) -> consumerTags[channel] = ok.consumerTag )
+		p = $.Promise()
+		ready.then (context) ->
+			sub = context.socket('SUB')
+			sub.connect channel, ->
+				sub.on 'data', handler
+				sub.on 'error', (err) ->
+					console.error err
+				sockets[channel] = sub
+				p.finish()
+			p
+
 	unsubscribe: (channel, handler) -> # handler gets (err, data)
-		ready.wait (err, connection) ->
-			return if err
-			connection.queue channel, (q) ->
-				return unless channel of consumerTags
-				q.unsubscribe consumerTags[channel]
+		$.Promise().finish()
+	
+	disconnect: ->
+		ready.then (context) ->
+			context.close()
+			for channel, sub of sockets
+				sub.close()
 }
 
