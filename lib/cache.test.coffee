@@ -75,5 +75,6 @@ exports.testPubSubInvalidateWithRabbitMq = (test) ->
 				test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
 				log "calling cache.disconnect"
 				cache.disconnect(amqp_url)
+				pub.close()
 				test.done()
 
