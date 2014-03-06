@@ -55,7 +55,6 @@ exports.testPubSubInvalidateWithStub = (test) ->
 		$.publish 'cache-activity', JSON.stringify { op: "remove", key: "b" }
 		$.delay 100, ->
 			test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
-			log "calling cache.disconnect"
 			cache.disconnect()
 			test.done()
 
@@ -73,7 +72,6 @@ exports.testPubSubInvalidateWithRabbitMq = (test) ->
 			pub.end JSON.stringify({ op: "remove", key: "b" }), 'utf8'
 			$.delay 100, ->
 				test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
-				log "calling cache.disconnect"
 				cache.disconnect(amqp_url)
 				context.close()
 				test.done()
