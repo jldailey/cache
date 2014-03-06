@@ -12,7 +12,7 @@ sockets = Object.create null
 Cache.register_protocol "amqp:", {
 	connect: (url) ->
 		context = Rabbit.createContext(url)
-		context.on 'ready', =>
+		context.on 'ready', ->
 			ready.finish context
 		context.on 'error', (err) ->
 			ready.fail err
