@@ -1,7 +1,6 @@
-$ = require 'bling'
-Rabbit = require('rabbit.js')
-Cache = require "../cache"
-Q = require 'q'
+$      = require 'bling'
+Rabbit = require 'rabbit.js'
+Cache  = require '../cache'
 
 log = $.logger "[rabbitmq]"
 
