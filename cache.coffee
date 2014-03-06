@@ -1,5 +1,7 @@
 $ = require 'bling'
 Url = require 'url'
+assert = require 'assert'
+log = $.logger "[cache]"
 
 # Implement an efficient cache that supports:
 # - fixed-sizing
@@ -9,6 +11,11 @@ Url = require 'url'
 EVICT_AUTO = -1
 
 module.exports = class Cache
+
+	protocols = Object.create null
+	Cache.register_protocol = (proto, impl) ->
+		protocols[proto] = impl
+
 	constructor: (
 		@capacity=Infinity,
 		@defaultTTL=Infinity,
@@ -100,25 +107,36 @@ module.exports = class Cache
 			reOrder item
 			return item.v
 	
-		protocols = Object.create null
-		@register_protocol = (proto, impl) ->
-			protocols[proto] = impl
 
+		connections = []
 		@connect = (url) =>
-			url = Url.parse url
-			impl = protocols[url.proto]
-			impl.subscribe "cache-activity", (err, message) ->
-				return console.error err if err
-				try
-					obj = JSON.parse message
-					assert 'op' of obj, "Message must contain an 'op'."
-					assert 'key' of obj, "Message must contain a 'key'."
-				catch err
-					return console.error err
-				switch obj.op
-					when 'remove' then @remove obj.key
-					when 'get' then impl.publish "cache-values", [ obj.key, @get(obj.key) ]
-					when 'set' then @set obj.key, obj.value
+			p = $.Promise()
+			parsed = Url.parse url
+			unless parsed.protocol of protocols
+				p.fail "unknown protocol", parsed.protocol
+			impl = protocols[parsed.protocol]
+			impl.connect(url).then (connection) =>
+				connections[url] = impl
+				log "connected, subscribing to cache-activity"
+				impl.subscribe "cache-activity", (message) =>
+					log "I see cache-activity:", message
+					try
+						obj = JSON.parse String(message)
+						log "parsed:", JSON.stringify(obj)
+						assert 'op' of obj, "Message must contain an 'op'."
+						assert 'key' of obj, "Message must contain a 'key'."
+					catch err
+						return p.fail err
+					switch obj.op
+						when 'remove' then @remove obj.key
+						when 'set' then @set obj.key, obj.value
+						else log "unknown op:", obj.op
+					null
+				p.finish()
+			p
+
+		@disconnect = (url) =>
+			connections[url]?.disconnect()
 
 
 require "./drivers"
