@@ -1,5 +1,6 @@
 assert = require 'assert'
 Cache = require './cache'
+$ = require 'bling'
 
 exports.testSetGetRemove = (test) ->
 	cache = new Cache()
@@ -43,3 +44,36 @@ exports.testEfficiency = (test) ->
 	test.equal cache.get('b'), 'b'
 	test.equal cache.get('c'), 'c'
 	test.done()
+
+exports.testPubSubInvalidateWithStub = (test) ->
+	log = $.logger "[stub-test]"
+	cache = new Cache()
+	cache.set 'a', 'a'
+	cache.set 'b', 'b'
+	cache.set 'c', 'c'
+	cache.connect("stub://").then ->
+		$.publish 'cache-activity', JSON.stringify { op: "remove", key: "b" }
+		$.delay 100, ->
+			test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
+			log "calling cache.disconnect"
+			cache.disconnect()
+			test.done()
+
+exports.testPubSubInvalidateWithRabbitMq = (test) ->
+	log = $.logger "[rabbit-test]"
+	cache = new Cache()
+	cache.set 'a', 'a'
+	cache.set 'b', 'b'
+	cache.set 'c', 'c'
+	amqp_url = "amqp://localhost:5672"
+	cache.connect(amqp_url).then ->
+		context = require('rabbit.js').createContext(amqp_url)
+		pub = context.socket('PUB')
+		pub.connect 'cache-activity', ->
+			pub.write JSON.stringify({ op: "remove", key: "b" }), 'utf8'
+			$.delay 100, ->
+				test.deepEqual cache.get('a','b','c'), ['a',undefined,'c']
+				log "calling cache.disconnect"
+				cache.disconnect(amqp_url)
+				test.done()
+
