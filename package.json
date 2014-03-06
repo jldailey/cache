@@ -8,7 +8,9 @@
     "gulp": "~3.5.2",
     "gulp-coffee": "~1.4.1",
     "coffee-script": "~1.7.1",
-    "gulp-rimraf": "0.0.9"
+    "gulp-rimraf": "0.0.9",
+    "q": "latest",
+    "rabbit.js": "^0.4.0"
   },
   "devDependencies": {
     "gulp-coffeelint": "~0.3.0",
