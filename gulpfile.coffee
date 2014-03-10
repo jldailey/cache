@@ -89,8 +89,7 @@ gulp.task "build", [
 ]
 
 gulp.task "nodeunit", ->
-	options = require "gulp-nodeunit/node_modules/nodeunit/bin/nodeunit.json"
-	options.output = nodeunitOutput
+	options = output: nodeunitOutput
 
 	gulp.src(testFiles)
 		.pipe nodeunit

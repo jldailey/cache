@@ -14,7 +14,7 @@
   "devDependencies": {
     "gulp-coffeelint": "~0.3.0",
     "gulp-jshint": "~1.5.0",
-    "gulp-nodeunit": "0.0.3"
+    "gulp-nodeunit": "0.0.5"
   },
   "scripts": {
     "test": "gulp test",
