@@ -1,7 +1,7 @@
 $     = require 'bling'
 Cache = require "../cache"
 
-log = $.logger "[stub]"
+logger = require('logger') "stub"
 
 ready = $.Promise()
 

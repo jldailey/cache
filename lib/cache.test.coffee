@@ -1,6 +1,7 @@
 assert = require 'assert'
-Cache = require './cache'
-$ = require 'bling'
+Cache  = require './cache'
+$      = require 'bling'
+Logger = require 'logger'
 
 exports.testSetGetRemove = (test) ->
 	cache = new Cache()
@@ -46,7 +47,7 @@ exports.testEfficiency = (test) ->
 	test.done()
 
 exports.testPubSubInvalidateWithStub = (test) ->
-	log = $.logger "[stub-test]"
+	logger = Logger "stub-test"
 	cache = new Cache()
 	cache.set 'a', 'a'
 	cache.set 'b', 'b'
@@ -59,7 +60,7 @@ exports.testPubSubInvalidateWithStub = (test) ->
 			test.done()
 
 exports.testPubSubInvalidateWithRabbitMq = (test) ->
-	log = $.logger "[rabbit-test]"
+	logger = Logger "rabbit-test"
 	cache = new Cache()
 	cache.set 'a', 'a'
 	cache.set 'b', 'b'

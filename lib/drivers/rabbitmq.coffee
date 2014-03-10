@@ -2,7 +2,7 @@ $      = require 'bling'
 Rabbit = require 'rabbit.js'
 Cache  = require '../cache'
 
-log = $.logger "[rabbitmq]"
+logger = require('logger') "rabbitmq"
 
 ready = $.Promise()
 

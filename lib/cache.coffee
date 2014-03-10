@@ -1,7 +1,7 @@
-$ = require 'bling'
-Url = require 'url'
+$      = require 'bling'
+Url    = require 'url'
 assert = require 'assert'
-log = $.logger "[cache]"
+logger = require('logger') "cache"
 
 # Implement an efficient cache that supports:
 # - fixed-sizing
@@ -126,7 +126,7 @@ module.exports = class Cache
 					switch obj.op
 						when 'remove' then @remove obj.key
 						when 'set' then @set obj.key, obj.value
-						else log "unknown op:", obj.op
+						else log.warn "unknown op:", obj.op
 					null
 				p.finish()
 			p
