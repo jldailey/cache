@@ -88,7 +88,7 @@ gulp.task "build", [
 	"copy-js"
 ]
 
-gulp.task "nodeunit", ->
+gulp.task "nodeunit", ["lint"], ->
 	options = output: nodeunitOutput
 
 	gulp.src(testFiles)
