@@ -10,7 +10,7 @@ logger = require('logger') "cache"
 
 EVICT_AUTO = -1
 
-module.exports = class Cache
+class Cache
 
 	protocols = Object.create null
 	Cache.register_protocol = (proto, impl) ->
@@ -134,5 +134,22 @@ module.exports = class Cache
 		@disconnect = (url) ->
 			connections[url]?.disconnect()
 
+		@flush = ->
+			index = Object.create null
+			order = []
+
+instances = {}
+getInstance = (bucketName = 'default') ->
+	return instances[bucketName] ?= new Cache()
+
+defineBucket = (name, args...) ->
+	return instances[name] = new Cache(args...)
+
+module.exports = $.extend getInstance,
+	register_protocol: Cache.register_protocol
+	defineBucket: defineBucket
+	flushAll: ->
+		for name, inst of instances
+			inst.flush()
 
 require "./drivers"

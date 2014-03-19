@@ -1,10 +1,14 @@
 assert = require 'assert'
-Cache  = require './cache'
+Cache  = require('./cache')
 $      = require 'bling'
 Logger = require 'logger'
 
+exports.testDefine = (test) ->
+	cache = Cache.defineBucket('testing', 1000)
+	test.done()
+	
 exports.testSetGetRemove = (test) ->
-	cache = new Cache()
+	cache = Cache('default')
 	test.equal cache.length, 0
 	cache.set 'key', 'value'
 	test.equal cache.length, 1
@@ -14,7 +18,7 @@ exports.testSetGetRemove = (test) ->
 	test.done()
 
 exports.testEviction = (test) ->
-	cache = new Cache()
+	cache = Cache('default')
 	cache.capacity = 10
 	cache.evictPct = .3
 	for i in [0...10] # fill the cache
@@ -26,7 +30,7 @@ exports.testEviction = (test) ->
 	test.done()
 
 exports.testEfficiency = (test) ->
-	cache = new Cache()
+	cache = Cache('default')
 	cache.capacity = 10
 	cache.evictPct = .2
 	for i in [0...8] # almost fill the cache
@@ -48,7 +52,7 @@ exports.testEfficiency = (test) ->
 
 exports.testPubSubInvalidateWithStub = (test) ->
 	logger = Logger "stub-test"
-	cache = new Cache()
+	cache = Cache('default')
 	cache.set 'a', 'a'
 	cache.set 'b', 'b'
 	cache.set 'c', 'c'
@@ -61,7 +65,7 @@ exports.testPubSubInvalidateWithStub = (test) ->
 
 exports.testPubSubInvalidateWithRabbitMq = (test) ->
 	logger = Logger "rabbit-test"
-	cache = new Cache()
+	cache = Cache('default')
 	cache.set 'a', 'a'
 	cache.set 'b', 'b'
 	cache.set 'c', 'c'
