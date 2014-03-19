@@ -1,13 +1,25 @@
 cache
 =====
 
-cache manager that supports: fixed-sizing, TTLs, and pubsub invalidation, and uses efficient eviction.
+cache manager that supports:
+	* fixed-sizing
+	* TTL expiration
+	* pubsub invalidation
+	* efficient eviction
+	* shared instances ("buckets")
+
 
 use like:
 
     Cache = require 'cache'
+    Cache.defineBucket("bucket_name", params...)
+    # params are...
+		# capacity=Infinity
+		# defaultTTL=Infinity
+		# evictCount=EVICT_AUTO
+		# evictPct=.25
     
-    cache = new Cache()
+    cache = Cache("bucket_name")
     
     cache.set('key', 'value', [ttl])
     
