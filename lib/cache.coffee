@@ -124,6 +124,7 @@ class Cache
 					catch err
 						return p.fail err
 					switch obj.op
+						when 'flush' then @flush()
 						when 'remove' then @remove obj.key
 						when 'set' then @set obj.key, obj.value
 						else log.warn "unknown op:", obj.op
