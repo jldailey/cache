@@ -37,4 +37,6 @@ To get pubsub invalidation:
 Messages should be published to "cache-activity".  They should look like:
 
     { "op": "remove", "key": "..." }
+    { "op": "set", "key": "...", "value": "..." }
+    { "op": "flush" }
   
