@@ -2,22 +2,23 @@ cache
 =====
 
 cache manager that supports:
-	* fixed-sizing
-	* TTL expiration
-	* pubsub invalidation
-	* efficient eviction
-	* shared instances ("buckets")
+
+* fixed-sizing
+* TTL expiration
+* pubsub invalidation
+* efficient eviction
+* shared instances ("buckets")
 
 
 use like:
 
     Cache = require 'cache'
     Cache.defineBucket("bucket_name", params...)
-    # params are...
-		# capacity=Infinity
-		# defaultTTL=Infinity
-		# evictCount=EVICT_AUTO
-		# evictPct=.25
+    # params are (in order)
+    # capacity=Infinity
+    # defaultTTL=Infinity
+    # evictCount=EVICT_AUTO
+    # evictPct=.25
     
     cache = Cache("bucket_name")
     
