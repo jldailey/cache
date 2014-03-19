@@ -1,6 +1,6 @@
 {
   "name": "cache",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Cache class for UA",
   "main": "dist/cache.js",
   "dependencies": {
